@@ -1,0 +1,62 @@
+public class writeextdata {
+    
+    @future
+    public static void methodWritedata1() {
+     //   Integer IntrandomNumber1 = Integer.valueof((Math.random() * 1000));
+        
+       // GNS_POC_Demo__x acnt = new GNS_POC_Demo__x();   
+         
+        List<AccountHistory> acnt_his = [select Id , field, OldValue, NewValue , IsDeleted, CreatedById, CreatedDate, DataType, AccountId from AccountHistory order by createddate desc limit 1  ];
+        List<GNS_POC_Demo__x> gns_list = new List<GNS_POC_Demo__x>();  
+        
+        for(AccountHistory ahis : acnt_his )
+        {   
+            GNS_POC_Demo__x acnt = new GNS_POC_Demo__x();   
+            acnt.Id__c = string.valueof(ahis.Id); // accepts duplicate values
+         //  acnt.AccountId__c = string.valueof(ahis.AccountId);
+          acnt.AccountId__c = string.valueof(1012);
+            // acnt.AccountId__c = string.valueof('AccountID'); // accepts duplicate values
+            // acnt.CreatedById__c = ahis.CreatedById; 
+            acnt.CreatedById__c = 'User-S1';    
+            acnt.CreatedDate__c = ahis.CreatedDate;
+            acnt.DataType__c = ahis.DataType ;
+            acnt.Field__c = ahis.field;
+            acnt.IsDeleted__c = String.valueof(ahis.IsDeleted); 
+            acnt.NewValue__c = String.valueof(ahis.NewValue);
+            acnt.OldValue__c = String.valueof(ahis.OldValue);
+            //    acnt.ExternalId = String.valueof(IntrandomNumber1); // unique value -  patient_bk_id
+            gns_list.add(acnt);
+        } 
+       List<Database.SaveResult> sr_list = new  List<Database.SaveResult>();
+   //    system.debug('gns_list - 0:' + gns_list[0]);
+      //  system.debug('gns_list - 1:' + gns_list[1]);
+      sr_list =  Database.insertAsync(gns_list); 
+         for(Database.SaveResult  ds : sr_list )
+        {
+         if (! ds.isSuccess ()) 
+            {
+                system.debug('Error: ' + ds);
+                String locator =  Database.getAsyncLocator ( ds );  
+                // completeacntCreation(locator);
+            }
+        }
+        
+   //     system.debug('gns_list' + gns_list); // contains multiple ids
+        
+     /*  for(GNS_POC_Demo__x  gl : gns_list )
+        {
+            Database.SaveResult sr = Database.insertAsync(gl); 
+            if (! sr.isSuccess ()) 
+            {
+                system.debug('Error: ' + sr);
+                String locator =  Database.getAsyncLocator ( sr );  
+                // completeacntCreation(locator);
+            }
+            else
+            { system.debug('Success ' + sr);}
+                
+        }*/
+        
+    } 
+    
+}
